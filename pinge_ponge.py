@@ -35,10 +35,15 @@ class Player(GameSprite):
       self.rect.y += self.speed
 
 rocket1 = Player("rocket.png", 30, 200, 4, 50, 150)
-rocket2 = Player("rocket.png", 30, 200, 4, 50, 150)
+rocket2 = Player("rocket.png", 620, 200, 4, 50, 150)
 ball = GameSprite("balls.png", 200, 200, 4, 50, 30)
 
-
+speed_y = 3
+speed_x = 3
+font.init()
+font = font.Font(None, 35)
+lose1 = font.render('PLAYER 1 LOSE!', True, (100, 0, 0))
+lose2 = font.render('PLAYER 2 LOSE!', True, (100, 0, 0))
 
 game = True
 finish = False
@@ -46,17 +51,34 @@ while game:
   for e in event.get():
     if e.type == QUIT:
       game = False    
-    if not finish:
-      window.fill(back)
+  if not finish:
+    window.fill(back)
+    rocket1.update_l()
+    rocket2.update_r()
 
-    if not finish:
-      window.fill(back)
-      rocket1.update_l()
-      rocket2.update_r()
+    ball.rect.x += speed_x
+    ball.rect.y += speed_y
 
-      rocket1.reset()
-      rocket2.reset()
-      ball.reset()
+    if sprite.collide_rect(rocket1, ball) or sprite.collide_rect(rocket2, ball):
+      speed_x *= -1
+      speed_y *= 1
 
-      display.update()
-    time.delay(50)
+    if ball.rect.y > win_height-50 or ball.rect.y < 0:
+      speed_y *= -1
+
+    if ball.rect.x < 0:
+      finish = True
+      window.blit(lose1, (250, 200)) 
+      game_over = True    
+        
+    if ball.rect.x > win_width:
+      finish = True
+      window.blit(lose2, (250, 200)) 
+      game_over = True            
+
+    rocket1.reset()
+    rocket2.reset()
+    ball.reset()
+
+    display.update()
+  time.delay(50)
